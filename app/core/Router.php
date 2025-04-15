@@ -18,19 +18,32 @@ class Router
 
     public function resolve($url, $method)
     {
-
         $url = rtrim($url, '/') ?: '/';
+        $routes = $this->routes[$method] ?? [];
 
-        $action = $this->routes[$method][$url] ?? null;
+        foreach ($routes as $route => $action) {
+            // TIKSLUS atitikmuo (pvz. "/")
+            if ($route === $url) {
+                [$controller, $method] = $action;
+                $instance = new $controller();
+                return call_user_func([$instance, $method]);
+            }
 
-        if (!$action) {
-            http_response_code(404);
-            echo '404 Not Found';
-            exit;
+            // DINAMINIS su {param}
+            $pattern = preg_replace('#\{[^/]+\}#', '([^/]+)', $route);
+            $pattern = "#^" . rtrim($pattern, '/') . "$#";
+
+            if (preg_match($pattern, $url, $matches)) {
+                array_shift($matches);
+
+                [$controller, $method] = $action;
+                $instance = new $controller();
+                return call_user_func_array([$instance, $method], $matches);
+            }
         }
 
-        [$controller, $method] = $action;
-        $instance = new $controller();
-        call_user_func([$instance, $method]);
+        http_response_code(404);
+        echo '404 Not Found';
+        exit;
     }
 }
