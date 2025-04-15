@@ -1,0 +1,15 @@
+{
+  "name": "ernes/invoice-generator",
+  "autoload": {
+    "psr-4": {
+      "Ernes\\InvoiceGenerator\\": "app/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Ernestas",
+      "email": "ernest.kneit@gmail.com"
+    }
+  ],
+  "require": {}
+}
