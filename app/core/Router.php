@@ -6,21 +6,22 @@ class Router
 {
     protected $routes = [];
 
-    public function get($uri, $action)
+    public function get($url, $action)
     {
-        $this->routes['GET'][$uri] = $action;
+        $this->routes['GET'][$url] = $action;
     }
 
-    public function post($uri, $action)
+    public function post($url, $action)
     {
-        $this->routes['POST'][$uri] = $action;
+        $this->routes['POST'][$url] = $action;
     }
 
-    public function resolve($uri, $method)
+    public function resolve($url, $method)
     {
-        $url = rtrim($uri, '/') ?: '/';
 
-        $action = $this->routes[$method][$url] ?? false;
+        $url = rtrim($url, '/') ?: '/';
+
+        $action = $this->routes[$method][$url] ?? null;
 
         if (!$action) {
             http_response_code(404);
