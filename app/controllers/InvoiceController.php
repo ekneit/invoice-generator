@@ -24,7 +24,7 @@ class InvoiceController extends BaseController
             exit;
         }
 
-        $this->view('invoice/store', [
+        $this->view('invoice/preview', [
             'title' => 'Store Invoice',
             'client' => htmlspecialchars($client),
             'amount' => number_format((float)$amount, 2)

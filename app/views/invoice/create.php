@@ -4,7 +4,7 @@
     <form action="/invoice/save" method="POST" class="space-y-4">
         <div>
             <label class="block text-sm font-medium">Client name</label>
-            <input type="text" name="client_name" required class="mt-1 w-full border rounded px-3 py-2" />
+            <input type="text" name="client" required class="mt-1 w-full border rounded px-3 py-2" />
         </div>
 
         <div>
