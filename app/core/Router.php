@@ -29,7 +29,7 @@ class Router
         }
 
         [$controller, $method] = $action;
-
-        call_user_func([$controller, $method]);
+        $instance = new $controller();
+        call_user_func([$instance, $method]);
     }
 }

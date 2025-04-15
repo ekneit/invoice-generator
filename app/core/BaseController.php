@@ -15,6 +15,6 @@ class BaseController
 
         $content = ob_get_clean();
 
-        require __DIR__ . '/../views/layouts/app.php';
+        require __DIR__ . '/../views/layout.php';
     }
 }

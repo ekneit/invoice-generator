@@ -2,7 +2,7 @@
   "name": "ernes/invoice-generator",
   "autoload": {
     "psr-4": {
-      "Ernes\\InvoiceGenerator\\": "app/"
+      "App\\": "app/"
     }
   },
   "authors": [
