@@ -11,5 +11,7 @@
       "email": "ernest.kneit@gmail.com"
     }
   ],
-  "require": {}
+  "require": {
+    "dompdf/dompdf": "^3.1"
+  }
 }

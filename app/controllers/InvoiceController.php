@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use Dompdf\Dompdf;
 use App\Core\BaseController;
 
 class InvoiceController extends BaseController
@@ -14,20 +15,22 @@ class InvoiceController extends BaseController
     }
     public function store()
     {
-        $client = $_POST['client'] ?? null;
-        $amount = $_POST['amount'] ?? null;
+        $data = $_POST;
 
-        // TODO: Refactor this to use a validation library
-        if (empty($client) || empty($amount)) {
-            http_response_code(400);
-            echo 'Client and amount are required';
-            exit;
-        }
+        ob_start();
+        include __DIR__ . '/../Views/invoice/pdf_template.php';
+        $html = ob_get_clean();
 
-        $this->view('invoice/preview', [
-            'title' => 'Store Invoice',
-            'client' => htmlspecialchars($client),
-            'amount' => number_format((float)$amount, 2)
-        ]);
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $invoiceNumber = preg_replace('/[^a-zA-Z0-9-_]/', '_', $data['invoice_number'] ?? 'none');
+        $date = $data['invoice_date'] ?? date('Y-m-d');
+
+        $filename = "saskaita_{$invoiceNumber}_{$date}.pdf";
+        $dompdf->stream($filename, ['Attachment' => true]);
+
+        exit;
     }
 }
