@@ -11,10 +11,10 @@ class BaseController
 
         ob_start();
 
-        require __DIR__ . "/../views/{$view}.php";
+        require __DIR__ . "/../Views/{$view}.php";
 
         $content = ob_get_clean();
 
-        require __DIR__ . '/../views/layout.php';
+        require __DIR__ . '/../Views/layout.php';
     }
 }

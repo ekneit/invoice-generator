@@ -130,7 +130,7 @@ class InvoiceController extends BaseController
                 $data['user_id'],
                 $data['invoice_number'],
                 $data['invoice_date'],
-                $data['invoice_due'] ?? null,
+                $data['invoice_due'] ?: null,
 
                 $data['seller_name'],
                 $data['seller_code'],

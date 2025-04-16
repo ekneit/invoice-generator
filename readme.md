@@ -38,5 +38,5 @@ Sukurta tam, kad būtų galima greitai išrašyti sąskaitas, jas atsisiųsti PD
    ```
 6. Paleisk:
    ```bash
-   php -S localhost:8000
+   php -S localhost:8000 .\public\index.php
    ```
