@@ -27,9 +27,12 @@ $router->post('/register', [\App\Controllers\AuthController::class, 'register'])
 
 $protectedRoutes = [
     '/logout',
+    '/invoices',
     '/invoice/create',
     '/invoice/save',
     '/invoice/view/{id}',
+    '/invoice/update/{id}',
+    '/upload',
 
 ];
 
@@ -42,9 +45,16 @@ foreach ($protectedRoutes as $protected) {
 }
 
 $router->get('/logout', [\App\Controllers\AuthController::class, 'logout']);
+$router->get('/invoices', [\App\Controllers\InvoiceController::class, 'invoices']);
 $router->get('/invoice/create', [\App\Controllers\InvoiceController::class, 'create']);
-$router->post('/invoice/save', [\App\Controllers\InvoiceController::class, 'store']);
 $router->get('/invoice/view/{id}', [\App\Controllers\InvoiceController::class, 'show']);
+
+$router->post('/invoice/save', [\App\Controllers\InvoiceController::class, 'store']);
+$router->post('/invoice/update/{id}', [\App\Controllers\InvoiceController::class, 'update']);
+
+$router->get('/upload', [\App\Controllers\UploadController::class, 'showForm']);
+$router->post('/upload', [\App\Controllers\UploadController::class, 'handleUpload']);
+
 
 
 
