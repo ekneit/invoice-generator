@@ -5,6 +5,17 @@ namespace App\Controllers;
 use App\Core\Database;
 use App\Core\BaseController;
 
+/* 
+TODO: Important!
+-  CSRF Protection
+-  Rate Limiting
+-  Session Regeneration
+-  Check ALL Input Sanitization / Type Checks
+-  User Activation
+-  Password Reset
+-  User Session Management
+*/
+
 class AuthController extends BaseController
 {
     public function showLogin()
@@ -113,7 +124,6 @@ class AuthController extends BaseController
 
         $userId = $pdo->lastInsertId();
 
-        // Iškart prisijungiam
         $_SESSION['user'] = [
             'id' => $userId,
             'name' => $name,
