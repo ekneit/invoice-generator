@@ -118,7 +118,6 @@ class InvoiceController extends BaseController
             $data['vat_amount'] = (float) ($data['vat_amount'] ?? 0);
             $data['total'] = (float) ($data['total'] ?? 0);
 
-            // 1. Įterpiam sąskaitą
             $stmt = $pdo->prepare("
                 INSERT INTO invoices (
                     user_id, invoice_number, invoice_date, invoice_due,
@@ -153,7 +152,6 @@ class InvoiceController extends BaseController
 
             $invoiceId = $pdo->lastInsertId();
 
-            // 2. Įrašom eilutes į DB ir renkame jas PDF'ui
             $items = [];
             foreach ($data['item_title'] as $i => $title) {
                 $qty = (float) $data['item_qty'][$i];
@@ -184,7 +182,6 @@ class InvoiceController extends BaseController
 
             $pdo->commit();
 
-            // 3. PDF generavimas (naudojame $data + $items)
             ob_start();
             include __DIR__ . '/../Views/invoice/pdf_template.php';
             $html = ob_get_clean();

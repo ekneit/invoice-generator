@@ -22,14 +22,12 @@ class Router
         $routes = $this->routes[$method] ?? [];
 
         foreach ($routes as $route => $action) {
-            // TIKSLUS atitikmuo (pvz. "/")
             if ($route === $url) {
                 [$controller, $method] = $action;
                 $instance = new $controller();
                 return call_user_func([$instance, $method]);
             }
 
-            // DINAMINIS su {param}
             $pattern = preg_replace('#\{[^/]+\}#', '([^/]+)', $route);
             $pattern = "#^" . rtrim($pattern, '/') . "$#";
 

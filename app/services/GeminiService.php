@@ -9,9 +9,6 @@ class GeminiService
         $apiKey = $_ENV['GEMINI_API_KEY'];
         $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}";
 
-
-
-
         $prompt = self::buildPrompt($ocrText);
 
         $body = [
@@ -92,7 +89,6 @@ class GeminiService
             return $json;
         }
 
-        // Bandymas atpažinti JSON iš teksto, jei nėra švariai suformatuotas
         preg_match('/\{.*\}/s', $text, $matches);
         if (!empty($matches[0])) {
             return json_decode($matches[0], true);
