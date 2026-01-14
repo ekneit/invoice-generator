@@ -58,24 +58,22 @@ class InvoiceController extends BaseController
             $stmt = $pdo->prepare("DELETE FROM invoice_items WHERE invoice_id = ?");
             $stmt->execute([$id]);
 
+            $insertQueryParts = [];
+            $insertParams = [];
+
             foreach ($data['item_title'] as $i => $title) {
                 $qty = (float) $data['item_qty'][$i];
                 $price = (float) $data['item_price'][$i];
                 $sum = $qty * $price;
 
-                $stmt = $pdo->prepare("
-                INSERT INTO invoice_items (invoice_id, title, quantity, unit, price, total)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ");
+                $insertQueryParts[] = "(?, ?, ?, ?, ?, ?)";
+                array_push($insertParams, $id, $title, $qty, $data['item_unit'][$i], $price, $sum);
+            }
 
-                $stmt->execute([
-                    $id,
-                    $title,
-                    $qty,
-                    $data['item_unit'][$i],
-                    $price,
-                    $sum
-                ]);
+            if (!empty($insertQueryParts)) {
+                $sql = "INSERT INTO invoice_items (invoice_id, title, quantity, unit, price, total) VALUES " . implode(', ', $insertQueryParts);
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute($insertParams);
             }
 
             $pdo->commit();
@@ -153,23 +151,16 @@ class InvoiceController extends BaseController
             $invoiceId = $pdo->lastInsertId();
 
             $items = [];
+            $insertQueryParts = [];
+            $insertParams = [];
+
             foreach ($data['item_title'] as $i => $title) {
                 $qty = (float) $data['item_qty'][$i];
                 $price = (float) $data['item_price'][$i];
                 $sum = $qty * $price;
 
-                $stmt = $pdo->prepare("
-                    INSERT INTO invoice_items (invoice_id, title, quantity, unit, price, total)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                ");
-                $stmt->execute([
-                    $invoiceId,
-                    $title,
-                    $qty,
-                    $data['item_unit'][$i],
-                    $price,
-                    $sum
-                ]);
+                $insertQueryParts[] = "(?, ?, ?, ?, ?, ?)";
+                array_push($insertParams, $invoiceId, $title, $qty, $data['item_unit'][$i], $price, $sum);
 
                 $items[] = [
                     'title' => $title,
@@ -178,6 +169,12 @@ class InvoiceController extends BaseController
                     'price' => $price,
                     'total' => $sum,
                 ];
+            }
+
+            if (!empty($insertQueryParts)) {
+                $sql = "INSERT INTO invoice_items (invoice_id, title, quantity, unit, price, total) VALUES " . implode(', ', $insertQueryParts);
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute($insertParams);
             }
 
             $pdo->commit();
