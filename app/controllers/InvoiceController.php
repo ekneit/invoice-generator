@@ -58,17 +58,18 @@ class InvoiceController extends BaseController
             $stmt = $pdo->prepare("DELETE FROM invoice_items WHERE invoice_id = ?");
             $stmt->execute([$id]);
 
+            // Bolt: Optimization - Prepare statement once, execute multiple times
+            $itemStmt = $pdo->prepare("
+                INSERT INTO invoice_items (invoice_id, title, quantity, unit, price, total)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ");
+
             foreach ($data['item_title'] as $i => $title) {
                 $qty = (float) $data['item_qty'][$i];
                 $price = (float) $data['item_price'][$i];
                 $sum = $qty * $price;
 
-                $stmt = $pdo->prepare("
-                INSERT INTO invoice_items (invoice_id, title, quantity, unit, price, total)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ");
-
-                $stmt->execute([
+                $itemStmt->execute([
                     $id,
                     $title,
                     $qty,
@@ -152,17 +153,19 @@ class InvoiceController extends BaseController
 
             $invoiceId = $pdo->lastInsertId();
 
+            // Bolt: Optimization - Prepare statement once, execute multiple times
+            $itemStmt = $pdo->prepare("
+                INSERT INTO invoice_items (invoice_id, title, quantity, unit, price, total)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ");
+
             $items = [];
             foreach ($data['item_title'] as $i => $title) {
                 $qty = (float) $data['item_qty'][$i];
                 $price = (float) $data['item_price'][$i];
                 $sum = $qty * $price;
 
-                $stmt = $pdo->prepare("
-                    INSERT INTO invoice_items (invoice_id, title, quantity, unit, price, total)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                ");
-                $stmt->execute([
+                $itemStmt->execute([
                     $invoiceId,
                     $title,
                     $qty,
