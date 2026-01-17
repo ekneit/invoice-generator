@@ -58,25 +58,7 @@ class InvoiceController extends BaseController
             $stmt = $pdo->prepare("DELETE FROM invoice_items WHERE invoice_id = ?");
             $stmt->execute([$id]);
 
-            foreach ($data['item_title'] as $i => $title) {
-                $qty = (float) $data['item_qty'][$i];
-                $price = (float) $data['item_price'][$i];
-                $sum = $qty * $price;
-
-                $stmt = $pdo->prepare("
-                INSERT INTO invoice_items (invoice_id, title, quantity, unit, price, total)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ");
-
-                $stmt->execute([
-                    $id,
-                    $title,
-                    $qty,
-                    $data['item_unit'][$i],
-                    $price,
-                    $sum
-                ]);
-            }
+            $this->saveInvoiceItems($pdo, $id, $data);
 
             $pdo->commit();
 
@@ -152,33 +134,7 @@ class InvoiceController extends BaseController
 
             $invoiceId = $pdo->lastInsertId();
 
-            $items = [];
-            foreach ($data['item_title'] as $i => $title) {
-                $qty = (float) $data['item_qty'][$i];
-                $price = (float) $data['item_price'][$i];
-                $sum = $qty * $price;
-
-                $stmt = $pdo->prepare("
-                    INSERT INTO invoice_items (invoice_id, title, quantity, unit, price, total)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                ");
-                $stmt->execute([
-                    $invoiceId,
-                    $title,
-                    $qty,
-                    $data['item_unit'][$i],
-                    $price,
-                    $sum
-                ]);
-
-                $items[] = [
-                    'title' => $title,
-                    'quantity' => $qty,
-                    'unit' => $data['item_unit'][$i],
-                    'price' => $price,
-                    'total' => $sum,
-                ];
-            }
+            $this->saveInvoiceItems($pdo, $invoiceId, $data);
 
             $pdo->commit();
 
@@ -242,5 +198,33 @@ class InvoiceController extends BaseController
             'items' => $items,
             'editing' => true
         ]);
+    }
+
+    private function saveInvoiceItems($pdo, $invoiceId, $data)
+    {
+        if (empty($data['item_title']) || !is_array($data['item_title'])) {
+            return;
+        }
+
+        $values = [];
+        $params = [];
+
+        foreach ($data['item_title'] as $i => $title) {
+            $qty = (float) ($data['item_qty'][$i] ?? 0);
+            $price = (float) ($data['item_price'][$i] ?? 0);
+            $sum = $qty * $price;
+            $unit = $data['item_unit'][$i] ?? '';
+
+            $values[] = "(?, ?, ?, ?, ?, ?)";
+            array_push($params, $invoiceId, $title, $qty, $unit, $price, $sum);
+        }
+
+        if (empty($values)) {
+            return;
+        }
+
+        $sql = "INSERT INTO invoice_items (invoice_id, title, quantity, unit, price, total) VALUES " . implode(", ", $values);
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
     }
 }
