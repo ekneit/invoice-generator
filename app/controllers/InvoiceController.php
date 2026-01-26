@@ -218,7 +218,8 @@ class InvoiceController extends BaseController
     public function invoices()
     {
         $pdo = Database::connect();
-        $stmt = $pdo->prepare("SELECT * FROM invoices WHERE user_id = ? ORDER BY invoice_date DESC");
+        // Optimization: Select only necessary columns to reduce memory usage and improve query performance
+        $stmt = $pdo->prepare("SELECT id, invoice_number, invoice_date, buyer_name, total FROM invoices WHERE user_id = ? ORDER BY invoice_date DESC");
         $stmt->execute([Auth::id()]);
         $invoices = $stmt->fetchAll();
 
